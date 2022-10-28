@@ -21,7 +21,6 @@ struct ClientInfo
 
 void *printer(struct ClientInfo *info)
 {
-    struct ClientInfo *clientInfo = info;
     sem_wait(&x);
     readercount++;
 
@@ -31,9 +30,9 @@ void *printer(struct ClientInfo *info)
     sem_post(&x);
 
     printf("\n%d reader is inside\n", readercount);
-    printf("\n Id: %d\n", clientInfo->id);
-    printf("Sequence: %d\n", clientInfo->sequence);
-    printf("Temperature: %d\n", clientInfo->temperature);
+    printf("\n Id: %d\n", info->id);
+    printf("Sequence: %d\n", info->sequence);
+    printf("Temperature: %d\n", info->temperature);
 
     sleep(1);
 
@@ -82,6 +81,7 @@ int main()
 
             newSocket = accept(serverSocket, (struct sockaddr *)&serverStorage, &addr_size);
             struct ClientInfo* info = (struct ClientInfo *)malloc(sizeof(struct ClientInfo));
+
             recv(newSocket, info, sizeof(info), 0);
 
             if (pthread_create(&readerthreads[i++], NULL, printer, info) != 0)
