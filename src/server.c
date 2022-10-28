@@ -9,19 +9,19 @@
 
 sem_t x, y;
 pthread_t threadNumber;
-pthread_t readerthreads[100];
+pthread_t readerthreads[1000];
 int readercount = 0;
 
 struct ClientInfo
 {
     int id;
     int sequence;
-    double temperature;
+    int temperature;
 };
 
 void *printer(struct ClientInfo *info)
 {
-    struct ClientInfo *clientInfo = (struct ClientInfo *)info;
+    struct ClientInfo *clientInfo = info;
     sem_wait(&x);
     readercount++;
 
@@ -30,10 +30,10 @@ void *printer(struct ClientInfo *info)
 
     sem_post(&x);
 
-    printf("\n%d reader is inside", readercount);
+    printf("\n%d reader is inside\n", readercount);
     printf("\n Id: %d\n", clientInfo->id);
     printf("Sequence: %d\n", clientInfo->sequence);
-    printf("Temperature: %f\n", clientInfo->temperature);
+    printf("Temperature: %d\n", clientInfo->temperature);
 
     sleep(1);
 
@@ -45,7 +45,7 @@ void *printer(struct ClientInfo *info)
 
     sem_post(&x);
 
-    printf("\n%d Reader is leaving", readercount + 1);
+    printf("\n%d Reader is leaving\n", readercount + 1);
     pthread_exit(NULL);
 }
 
@@ -70,7 +70,7 @@ int main()
     else
         printf("Error\n");
 
-    pthread_t threadNumber[10];
+    pthread_t threadNumber[100];
 
     int i = 0;
 
@@ -81,10 +81,8 @@ int main()
             addr_size = sizeof(serverStorage);
 
             newSocket = accept(serverSocket, (struct sockaddr *)&serverStorage, &addr_size);
-            struct ClientInfo* info;
+            struct ClientInfo* info = (struct ClientInfo *)malloc(sizeof(struct ClientInfo));
             recv(newSocket, info, sizeof(info), 0);
-
-            printf("test %d\n", info->id);
 
             if (pthread_create(&readerthreads[i++], NULL, printer, info) != 0)
                 printf("Failed to create thread\n");

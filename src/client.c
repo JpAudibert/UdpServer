@@ -11,7 +11,7 @@ struct ClientInfo
 {
     int id;
     int sequence;
-    double temperature;
+    int temperature;
 };
 
 void *clientThread(void* args)
@@ -37,7 +37,7 @@ void *clientThread(void* args)
     if(client_request->id == 1)
         printf("Connection established\n");
 
-    send(network_socket, &client_request, sizeof(client_request), 0);
+    send(network_socket, client_request, sizeof(client_request), 0);
 
     close(network_socket);
     pthread_exit(NULL);
